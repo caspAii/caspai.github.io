@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CaspAI | Yapay Zeka Asistanı</title>
+<meta name="description" content="CaspAI - Azerbaycan'ın yapay zeka sohbet botu. Sorularını sor, anında cevap al. Ücretsiz ve 7/24 aktif.">
+<meta name="keywords" content="CaspAI, yapay zeka, sohbet botu, AI, Azerbaycan, süni intellekt">
+<meta name="author" content="CaspAI">
+<meta property="og:title" content="CaspAI | Yapay Zeka Asistanı">
+<meta property="og:description" content="Sorularını sor, anında cevap al. Ücretsiz ve 7/24 aktif.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://caspai.github.io">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #f0f6ff; }
+.navbar { background: #fff; border-bottom: 1px solid #d0e4f7; padding: 0 2rem; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: #1a6fc4; }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { font-size: 14px; color: #4a7db5; text-decoration: none; font-weight: 500; }
+.nav-links a:hover { color: #1a6fc4; }
+.hero { text-align: center; padding: 3rem 1rem 2rem; }
+.hero h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 38px; color: #0d3b6e; line-height: 1.2; margin-bottom: 12px; }
+.hero p { font-size: 16px; color: #5a8ab5; max-width: 480px; margin: 0 auto 2rem; line-height: 1.6; }
+.chat-container { max-width: 720px; margin: 0 auto 2rem; width: 100%; padding: 0 1rem; }
+.chat-box { background: #fff; border-radius: 16px; border: 1px solid #c8dff5; overflow: hidden; box-shadow: 0 4px 24px rgba(26,111,196,0.08); }
+.chat-messages { padding: 1.5rem; min-height: 280px; max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.msg { display: flex; gap: 10px; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+.msg-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.msg.bot .msg-avatar { background: #1a6fc4; color: #fff; }
+.msg.user .msg-avatar { background: #e0eefc; color: #1a6fc4; }
+.msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 15px; line-height: 1.5; max-width: 82%; }
+.msg.bot .msg-bubble { background: #f0f7ff; color: #0d3b6e; border-bottom-left-radius: 4px; }
+.msg.user .msg-bubble { background: #1a6fc4; color: #fff; border-bottom-right-radius: 4px; }
+.typing { display: flex; gap: 4px; align-items: center; padding: 6px 2px; }
+.typing span { width: 7px; height: 7px; background: #90b8e0; border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-7px); } }
+.chat-input-area { border-top: 1px solid #d0e4f7; padding: 1rem; display: flex; gap: 10px; background: #fafcff; }
+.chat-input-area input { flex: 1; border: 1px solid #c8dff5; border-radius: 10px; padding: 10px 14px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: #0d3b6e; outline: none; background: #fff; }
+.chat-input-area input:focus { border-color: #1a6fc4; }
+.chat-input-area input::placeholder { color: #a0bcd8; }
+.send-btn { background: #1a6fc4; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.send-btn:hover { background: #155fa8; }
+.send-btn:disabled { background: #90b8e0; cursor: not-allowed; }
+.features { display: flex; gap: 16px; max-width: 720px; margin: 0 auto 3rem; padding: 0 1rem; flex-wrap: wrap; justify-content: center; }
+.feature-card { background: #fff; border: 1px solid #d0e4f7; border-radius: 12px; padding: 1.2rem 1.5rem; flex: 1; min-width: 180px; }
+.feature-card .icon { font-size: 22px; margin-bottom: 8px; }
+.feature-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #0d3b6e; margin-bottom: 4px; }
+.feature-card p { font-size: 13px; color: #5a8ab5; line-height: 1.5; }
+
+/* DONATE */
+.donate-section { background: linear-gradient(135deg, #1a6fc4 0%, #0d3b6e 100%); padding: 3rem 1rem; text-align: center; }
+.donate-section h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; color: #fff; margin-bottom: 10px; }
+.donate-section > p { font-size: 15px; color: #b8d8f5; max-width: 420px; margin: 0 auto 1.8rem; line-height: 1.6; }
+.donate-amounts { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.donate-btn { background: rgba(255,255,255,0.15); color: #fff; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 10px; padding: 10px 22px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.donate-btn:hover, .donate-btn.active { background: #fff; color: #1a6fc4; }
+.donate-main-btn { background: #fff; color: #1a6fc4; border: none; border-radius: 10px; padding: 13px 36px; font-size: 16px; font-weight: 700; font-family: 'Syne', sans-serif; cursor: pointer; margin-bottom: 1.5rem; }
+.donate-main-btn:hover { background: #e0eefc; }
+.iban-box { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 1.2rem 1.5rem; max-width: 420px; margin: 0 auto; display: none; text-align: left; }
+.iban-box.show { display: block; }
+.iban-row { margin-bottom: 12px; }
+.iban-row:last-child { margin-bottom: 0; }
+.iban-label { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+.iban-value { font-size: 15px; color: #fff; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.copy-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; flex-shrink: 0; }
+.copy-btn:hover { background: rgba(255,255,255,0.35); }
+
+/* CONTACT */
+.contact-section { background: #fff; padding: 3rem 1rem; }
+.contact-inner { max-width: 640px; margin: 0 auto; }
+.contact-inner h2 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; color: #0d3b6e; margin-bottom: 8px; text-align: center; }
+.contact-inner .sub { font-size: 15px; color: #5a8ab5; text-align: center; margin-bottom: 2rem; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.contact-grid input, .contact-grid textarea { border: 1px solid #c8dff5; border-radius: 10px; padding: 12px 14px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: #0d3b6e; outline: none; background: #f7fbff; width: 100%; }
+.contact-grid input:focus, .contact-grid textarea:focus { border-color: #1a6fc4; }
+.contact-grid input::placeholder, .contact-grid textarea::placeholder { color: #a0bcd8; }
+.contact-grid .full { grid-column: 1 / -1; }
+.contact-grid textarea { resize: vertical; min-height: 110px; }
+.contact-submit { margin-top: 14px; width: 100%; background: #1a6fc4; color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.contact-submit:hover { background: #155fa8; }
+.success-msg { display: none; text-align: center; color: #1a6fc4; font-weight: 500; margin-top: 14px; font-size: 15px; }
+.footer { text-align: center; padding: 1.5rem; font-size: 13px; color: #90b8e0; border-top: 1px solid #d0e4f7; background: #f0f6ff; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="logo">CaspAI</div>
+  <div class="nav-links">
+    <a href="#">Anasayfa</a>
+    <a href="#donate">Destek</a>
+    <a href="#contact">İletişim</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Yapay Zeka ile<br>Konuş</h1>
+  <p>Sorularını sor, cevaplarını al. Hızlı, akıllı ve her zaman hazır.</p>
+</div>
+
+<div class="chat-container">
+  <div class="chat-box">
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot">
+        <div class="msg-avatar">AI</div>
+        <div class="msg-bubble">Merhaba! Ben CaspAI. Sana nasıl yardımcı olabilirim?</div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Mesajını yaz..." />
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">Gönder</button>
+    </div>
+    <div style="padding: 8px 1rem; font-size: 12px; color: #90b8e0; background: #fafcff; border-top: 1px solid #d0e4f7;" id="limitInfo"></div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="feature-card"><div class="icon">⚡</div><h3>Hızlı Cevaplar</h3><p>Saniyeler içinde detaylı yanıtlar alırsın.</p></div>
+  <div class="feature-card"><div class="icon">🧠</div><h3>Akıllı Analiz</h3><p>Karmaşık konuları sade bir dille açıklar.</p></div>
+  <div class="feature-card"><div class="icon">🌙</div><h3>7/24 Aktif</h3><p>Gece gündüz demeden her an yanındayım.</p></div>
+</div>
+
+<div class="donate-section" id="donate">
+  <h2>☕ Bize Destek Ol</h2>
+  <p>Bu projeyi ücretsiz tutmak için bağış yapabilirsin. Her katkı büyük fark yaratıyor!</p>
+  <div class="donate-amounts">
+    <button class="donate-btn" onclick="selectAmount(this)">₼5</button>
+    <button class="donate-btn active" onclick="selectAmount(this)">₼10</button>
+    <button class="donate-btn" onclick="selectAmount(this)">₼20</button>
+    <button class="donate-btn" onclick="selectAmount(this)">Özel</button>
+  </div>
+  <button class="donate-main-btn" onclick="showIban()">Bağış Yap →</button>
+  <div class="iban-box" id="ibanBox">
+    <div class="iban-row">
+      <div class="iban-label">Banka</div>
+      <div class="iban-value">Rabitəbank, Baku, Azerbaijan</div>
+    </div>
+    <div class="iban-row">
+      <div class="iban-label">IBAN</div>
+      <div class="iban-value">
+        <span>AZ06RBTA06410100150944524688</span>
+        <button class="copy-btn" id="copyBtn" onclick="copyIban()">Kopyala</button>
+      </div>
+    </div>
+    <div class="iban-row">
+      <div class="iban-label">Açıklama</div>
+      <div class="iban-value">CaspAI Desteği</div>
+    </div>
+  </div>
+</div>
+
+<div class="contact-section" id="contact">
+  <div class="contact-inner">
+    <h2>Bizimle İletişime Geç</h2>
+    <p class="sub">Soru, öneri veya iş birliği için mesaj gönder.</p>
+    <div class="contact-grid">
+      <input type="text" placeholder="Adın" id="cName" />
+      <input type="email" placeholder="E-posta adresin" id="cEmail" />
+      <textarea class="full" placeholder="Mesajın..." id="cMsg"></textarea>
+    </div>
+    <button class="contact-submit" onclick="submitContact()">Mesaj Gönder</button>
+    <p class="success-msg" id="successMsg">✅ Mesajın alındı! En kısa sürede dönüş yapacağız.</p>
+  </div>
+</div>
+
+<div class="footer">© 2026 CaspAI · Tüm hakları saklıdır</div>
+
+<script>
+const GEMINI_API_KEY = "AIzaSyB3836F6mJ3guEjCZ4TOwn-8LK1Hwi5SJo"; // Buraya kendi key'ini yaz
+const DAILY_LIMIT = 20;
+
+const messages = [];
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Günlük limit kontrolü
+function getTodayKey() {
+  return 'caspai_' + new Date().toISOString().slice(0, 10);
+}
+function getUsedCount() {
+  return parseInt(localStorage.getItem(getTodayKey()) || '0');
+}
+function incrementCount() {
+  localStorage.setItem(getTodayKey(), getUsedCount() + 1);
+}
+function updateLimitDisplay() {
+  const used = getUsedCount();
+  const remaining = DAILY_LIMIT - used;
+  const el = document.getElementById('limitInfo');
+  if (el) el.textContent = `Bugün kalan mesaj: ${remaining}/${DAILY_LIMIT}`;
+  if (remaining <= 0) {
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+    chatInput.placeholder = "Günlük limit doldu, yarın tekrar gel!";
+  }
+}
+
+chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+updateLimitDisplay();
+
+function selectAmount(el) {
+  document.querySelectorAll('.donate-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function showIban() {
+  document.getElementById('ibanBox').classList.toggle('show');
+}
+
+function copyIban() {
+  navigator.clipboard.writeText('AZ06RBTA06410100150944524688').then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Kopyalandı';
+    setTimeout(() => btn.textContent = 'Kopyala', 2000);
+  });
+}
+
+function submitContact() {
+  const name = document.getElementById('cName').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const msg = document.getElementById('cMsg').value.trim();
+  if (!name || !email || !msg) { alert('Lütfen tüm alanları doldur.'); return; }
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('cName').value = '';
+  document.getElementById('cEmail').value = '';
+  document.getElementById('cMsg').value = '';
+}
+
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = `msg ${role === 'user' ? 'user' : 'bot'}`;
+  div.innerHTML = `<div class="msg-avatar">${role === 'user' ? 'Sen' : 'AI'}</div><div class="msg-bubble">${text}</div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'msg bot'; div.id = 'typingIndicator';
+  div.innerHTML = `<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+async function sendMessage() {
+  if (getUsedCount() >= DAILY_LIMIT) {
+    addMessage('bot', "Bugünlük mesaj limitin doldu! Yarın tekrar gel 🌙");
+    return;
+  }
+  const text = chatInput.value.trim();
+  if (!text) return;
+  chatInput.value = '';
+  sendBtn.disabled = true;
+  addMessage('user', text);
+  messages.push({ role: "user", parts: [{ text }] });
+  showTyping();
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: "Sen CaspAI adında yardımcı bir yapay zeka asistanısın. Türkçe konuşuyorsun. Kısa, net ve samimi cevaplar ver." }] },
+        contents: messages
+      })
+    });
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Bir hata oluştu.";
+    removeTyping();
+    addMessage('bot', reply);
+    messages.push({ role: "model", parts: [{ text: reply }] });
+    incrementCount();
+    updateLimitDisplay();
+  } catch {
+    removeTyping();
+    addMessage('bot', "Bağlantı hatası, tekrar dene.");
+  }
+  sendBtn.disabled = false;
+  chatInput.focus();
+}
+</script>
+</body>
+</html>
