@@ -114,6 +114,7 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f6ff; }
       <input type="text" id="chatInput" placeholder="Mesajını yaz..." />
       <button class="send-btn" id="sendBtn" onclick="sendMessage()">Gönder</button>
     </div>
+    <div style="padding: 8px 1rem; font-size: 12px; color: #90b8e0; background: #fafcff; border-top: 1px solid #d0e4f7;" id="limitInfo"></div>
   </div>
 </div>
 
@@ -169,12 +170,38 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f6ff; }
 <div class="footer">© 2026 CaspAI · Tüm hakları saklıdır</div>
 
 <script>
-const messages = [{ role: "assistant", content: "Merhaba! Ben CaspAI. Sana nasıl yardımcı olabilirim?" }];
+const GEMINI_API_KEY = "AIzaSyBCnQQcHculX1o1dn28iOQ5m-xhnap4Q1Q";
+const DAILY_LIMIT = 20;
+
+const messages = [];
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
 
+// Günlük limit kontrolü
+function getTodayKey() {
+  return 'caspai_' + new Date().toISOString().slice(0, 10);
+}
+function getUsedCount() {
+  return parseInt(localStorage.getItem(getTodayKey()) || '0');
+}
+function incrementCount() {
+  localStorage.setItem(getTodayKey(), getUsedCount() + 1);
+}
+function updateLimitDisplay() {
+  const used = getUsedCount();
+  const remaining = DAILY_LIMIT - used;
+  const el = document.getElementById('limitInfo');
+  if (el) el.textContent = `Bugün kalan mesaj: ${remaining}/${DAILY_LIMIT}`;
+  if (remaining <= 0) {
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+    chatInput.placeholder = "Günlük limit doldu, yarın tekrar gel!";
+  }
+}
+
 chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+updateLimitDisplay();
 
 function selectAmount(el) {
   document.querySelectorAll('.donate-btn').forEach(b => b.classList.remove('active'));
@@ -226,29 +253,33 @@ function removeTyping() {
 }
 
 async function sendMessage() {
+  if (getUsedCount() >= DAILY_LIMIT) {
+    addMessage('bot', "Bugünlük mesaj limitin doldu! Yarın tekrar gel 🌙");
+    return;
+  }
   const text = chatInput.value.trim();
   if (!text) return;
   chatInput.value = '';
   sendBtn.disabled = true;
   addMessage('user', text);
-  messages.push({ role: "user", content: text });
+  messages.push({ role: "user", parts: [{ text }] });
   showTyping();
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: "Sen CaspAI adında yardımcı bir yapay zeka asistanısın. Türkçe konuşuyorsun. Kısa, net ve samimi cevaplar ver.",
-        messages
+        system_instruction: { parts: [{ text: "Sen CaspAI adında yardımcı bir yapay zeka asistanısın. Türkçe konuşuyorsun. Kısa, net ve samimi cevaplar ver." }] },
+        contents: messages
       })
     });
     const data = await res.json();
-    const reply = data.content?.[0]?.text || "Bir hata oluştu.";
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Bir hata oluştu.";
     removeTyping();
     addMessage('bot', reply);
-    messages.push({ role: "assistant", content: reply });
+    messages.push({ role: "model", parts: [{ text: reply }] });
+    incrementCount();
+    updateLimitDisplay();
   } catch {
     removeTyping();
     addMessage('bot', "Bağlantı hatası, tekrar dene.");
